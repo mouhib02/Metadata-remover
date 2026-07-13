@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metadata Remover</title>
+  <meta name="description" content="Remove hidden metadata from your photos. Everything happens in your browser.">
+  <meta name="theme-color" content="#050505">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #050505;
+      --panel: #111111;
+      --border: #242424;
+      --border-hover: #363636;
+      --text: #ECECEC;
+      --text-secondary: #8A8A8A;
+      --text-tertiary: #555555;
+      --success: #00FF66;
+      --warning: #F5C451;
+      --error: #FF5C5C;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 0 24px;
+    }
+
+    ::selection {
+      background: rgba(0, 255, 102, 0.15);
+    }
+
+    :focus-visible {
+      outline: 1px solid var(--success);
+      outline-offset: 2px;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+      margin: auto;
+      padding: 48px 0;
+    }
+
+    /* ─── Header ─── */
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-logo {
+      color: var(--success);
+      width: 40px;
+      height: 40px;
+      margin-bottom: 16px;
+      opacity: 0.95;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    /* ─── Workspace ─── */
+
+    #workspace {
+      position: relative;
+    }
+
+    /* ─── Drop Zone ─── */
+
+    .drop-zone {
+      border: 1.5px dashed var(--border-hover);
+      padding: 72px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 150ms ease, background 150ms ease;
+    }
+
+    .drop-zone:hover {
+      border-color: #454545;
+    }
+
+    .drop-zone:focus-visible {
+      outline: none;
+      border-color: var(--success);
+    }
+
+    .drop-zone.over {
+      border-color: var(--success);
+      border-style: solid;
+      background: rgba(0, 255, 102, 0.02);
+    }
+
+    .drop-primary {
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .drop-secondary {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    .drop-formats {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.5px;
+      margin-top: 20px;
+    }
+
+    /* ─── Processing ─── */
+
+    .processing {
+      padding: 72px 32px;
+      text-align: center;
+      border: 1.5px solid var(--border);
+    }
+
+    .processing-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* ─── Result ─── */
+
+    .result {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      padding: 32px;
+      animation: fadeIn 200ms ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-heading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .result-heading svg {
+      flex-shrink: 0;
+    }
+
+    .result-file + .result-file {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .result-name {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .result-details {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    .result-meta {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    .result-meta .found {
+      color: var(--success);
+    }
+
+    .result-file-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+      padding: 0;
+      background: none;
+      border: none;
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: color 150ms ease;
+    }
+
+    .result-file-download:hover {
+      color: var(--success);
+    }
+
+    .result-file-download svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .result-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border: 1px solid var(--success);
+      color: var(--success);
+      background: transparent;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .btn-download:hover {
+      background: rgba(0, 255, 102, 0.08);
+    }
+
+    .btn-download svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn-reset {
+      background: none;
+      border: none;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 8px 0;
+      transition: color 150ms ease;
+    }
+
+    .btn-reset:hover {
+      color: var(--text);
+    }
+
+    /* ─── Error ─── */
+
+    .error-card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      padding: 32px;
+      text-align: center;
+      animation: fadeIn 200ms ease;
+    }
+
+    .error-message {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    .error-detail {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--error);
+      margin-bottom: 24px;
+    }
+
+    /* ─── Footer ─── */
+
+    .footer {
+      text-align: center;
+      margin-top: 28px;
+    }
+
+    .privacy {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .privacy svg {
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+
+    .disclaimer {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 12px;
+      line-height: 1.6;
+      opacity: 0.7;
+    }
+
+    /* ─── Responsive ─── */
+
+    @media (max-width: 540px) {
+      body { padding: 0 16px; }
+      .app { padding: 32px 0; }
+      .header { margin-bottom: 28px; }
+      .drop-zone { padding: 56px 20px; }
+      .processing { padding: 56px 20px; }
+      .result { padding: 24px 20px; }
+      .result-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+      .btn-download { justify-content: center; }
+      .btn-reset { text-align: center; }
+    }
+
+    @media (max-width: 360px) {
+      .title { font-size: 18px; }
+      .subtitle { font-size: 13px; }
+      .drop-primary { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <!-- Minimal geometric logo: solid photo frame, dashed offset metadata layer -->
+        <path d="M9 5h10a2 2 0 0 1 2 2v10" stroke-dasharray="2.5 2.5" opacity="0.4" />
+        <rect x="3" y="7" width="12" height="12" rx="1.5" />
+        <circle cx="7" cy="11" r="1.5" fill="currentColor" stroke="none" />
+        <path d="M3 16l3-3 4 3" />
+      </svg>
+      <h1 class="title">Metadata Remover</h1>
+      <p class="subtitle">Remove what your photos know about you.</p>
+    </header>
+
+    <main id="workspace" aria-label="Image processing area" aria-live="polite"></main>
+
+    <noscript>
+      <p style="text-align:center;color:#8A8A8A;margin-top:48px;">JavaScript is required to use this tool.</p>
+    </noscript>
+
+    <footer class="footer">
+      <p class="privacy">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Everything stays on your device. Nothing is uploaded.
+      </p>
+      <p class="disclaimer">Common metadata like EXIF, XMP, and IPTC is removed through canvas re-encoding. Complete removal of all metadata is not guaranteed.</p>
+    </footer>
+  </div>
+
+  <input type="file" id="file-input" accept="image/*" multiple hidden aria-hidden="true">
+
+  <script>
+  (function () {
+    'use strict';
+
+    var workspace = document.getElementById('workspace');
+    var fileInput = document.getElementById('file-input');
+    var objectURLs = [];
+
+    // ─── Utilities ─────────────────────────────────
+
+    function esc(str) {
+      var el = document.createElement('span');
+      el.textContent = str;
+      return el.innerHTML;
+    }
+
+    function formatBytes(n) {
+      if (n === 0) return '0 B';
+      var units = ['B', 'KB', 'MB', 'GB'];
+      var i = Math.floor(Math.log(n) / Math.log(1024));
+      return (n / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0) + ' ' + units[i];
+    }
+
+    function cleanName(name) {
+      var dot = name.lastIndexOf('.');
+      if (dot === -1) return name + '_cleaned';
+      return name.slice(0, dot) + '_cleaned' + name.slice(dot);
+    }
+
+    function outputMime(file, format) {
+      var map = { jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
+      return map[format] || file.type || 'image/png';
+    }
+
+    function wait(ms) {
+      return new Promise(function (r) { setTimeout(r, ms); });
+    }
+
+    function storeURL(blob) {
+      var url = URL.createObjectURL(blob);
+      objectURLs.push(url);
+      return url;
+    }
+
+    function revokeAll() {
+      objectURLs.forEach(function (u) { URL.revokeObjectURL(u); });
+      objectURLs = [];
+    }
+
+    // ─── Metadata Inspector ───────────────────────
+
+    function detectFormat(bytes) {
+      if (bytes.length < 4) return null;
+      if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) return 'jpeg';
+      if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) return 'png';
+      if (bytes.length >= 12) {
+        var r = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+        var w = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+        if (r === 'RIFF' && w === 'WEBP') return 'webp';
+      }
+      if (bytes.length >= 6 && String.fromCharCode(bytes[0], bytes[1], bytes[2]) === 'GIF') return 'gif';
+      if (bytes.length >= 4) {
+        if ((bytes[0] === 0x49 && bytes[1] === 0x49 && bytes[2] === 0x2A && bytes[3] === 0x00) ||
+            (bytes[0] === 0x4D && bytes[1] === 0x4D && bytes[2] === 0x00 && bytes[3] === 0x2A)) return 'tiff';
+      }
+      if (bytes.length >= 12) {
+        var f = String.fromCharCode(bytes[4], bytes[5], bytes[6], bytes[7]);
+        if (f === 'ftyp') {
+          var b = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+          if (['heic', 'heix', 'hevc', 'hevx', 'mif1'].indexOf(b) !== -1) return 'heic';
+        }
+      }
+      return null;
+    }
+
+    function scanJPEG(buf) {
+      var v = new DataView(buf);
+      var r = { exif: false, xmp: false, iptc: false, icc: false };
+      if (v.byteLength < 4 || v.getUint16(0) !== 0xFFD8) return r;
+      var o = 2;
+      while (o + 4 <= v.byteLength) {
+        if (v.getUint8(o) !== 0xFF) break;
+        var m = v.getUint8(o + 1);
+        if (m === 0xFF) { o++; continue; }
+        if (m === 0xDA || m === 0xD9) break;
+        if ((m >= 0xD0 && m <= 0xD7) || m === 0x01) { o += 2; continue; }
+        var len = v.getUint16(o + 2);
+        if (m === 0xE1 && len > 6) {
+          if (o + 10 <= v.byteLength &&
+              v.getUint8(o+4)===0x45 && v.getUint8(o+5)===0x78 &&
+              v.getUint8(o+6)===0x69 && v.getUint8(o+7)===0x66 &&
+              v.getUint8(o+8)===0x00 && v.getUint8(o+9)===0x00) r.exif = true;
+          if (o + 32 <= v.byteLength) {
+            var s = '';
+            for (var i = 0; i < 28; i++) s += String.fromCharCode(v.getUint8(o+4+i));
+            if (s === 'http://ns.adobe.com/xap/1.0/') r.xmp = true;
+          }
+        }
+        if (m === 0xE2 && o + 16 <= v.byteLength) {
+          var ic = '';
+          for (var j = 0; j < 11; j++) ic += String.fromCharCode(v.getUint8(o+4+j));
+          if (ic === 'ICC_PROFILE') r.icc = true;
+        }
+        if (m === 0xED) r.iptc = true;
+        o += 2 + len;
+      }
+      return r;
+    }
+
+    function scanPNG(buf) {
+      var v = new DataView(buf);
+      var r = { exif: false, xmp: false, iptc: false, icc: false, text: false };
+      if (v.byteLength < 8) return r;
+      var o = 8;
+      while (o + 8 <= v.byteLength) {
+        var cl = v.getUint32(o);
+        var t = String.fromCharCode(v.getUint8(o+4), v.getUint8(o+5), v.getUint8(o+6), v.getUint8(o+7));
+        if (t === 'eXIf') r.exif = true;
+        if (t === 'tEXt' || t === 'iTXt' || t === 'zTXt') r.text = true;
+        if (t === 'iTXt') r.xmp = true;
+        if (t === 'iCCP') r.icc = true;
+        if (t === 'IEND') break;
+        o += 12 + cl;
+      }
+      return r;
+    }
+
+    function scanWebP(buf) {
+      var v = new DataView(buf);
+      var r = { exif: false, xmp: false, iptc: false, icc: false };
+      if (v.byteLength < 12) return r;
+      var o = 12;
+      while (o + 8 <= v.byteLength) {
+        var cc = String.fromCharCode(v.getUint8(o), v.getUint8(o+1), v.getUint8(o+2), v.getUint8(o+3));
+        var sz = v.getUint32(o + 4, true);
+        if (cc === 'EXIF') r.exif = true;
+        if (cc === 'XMP ') r.xmp = true;
+        if (cc === 'ICCP') r.icc = true;
+        o += 8 + sz;
+        if (sz % 2 !== 0) o++;
+      }
+      return r;
+    }
+
+    async function inspectFile(file) {
+      var slice = file.slice(0, Math.min(file.size, 65536));
+      var buf = await slice.arrayBuffer();
+      var bytes = new Uint8Array(buf);
+      var format = detectFormat(bytes);
+
+      var scan;
+      if (format === 'jpeg') scan = scanJPEG(buf);
+      else if (format === 'png') scan = scanPNG(buf);
+      else if (format === 'webp') scan = scanWebP(buf);
+      else scan = { exif: false, xmp: false, iptc: false, icc: false };
+
+      var types = [];
+      if (scan.exif) types.push('EXIF');
+      if (scan.xmp) types.push('XMP');
+      if (scan.iptc) types.push('IPTC');
+      if (scan.icc) types.push('ICC');
+
+      return { format: format, types: types, hasMetadata: types.length > 0 };
+    }
+
+    // ─── Validation ───────────────────────────────
+
+    function validate(file, format) {
+      if (file.size === 0) return 'This file is empty.';
+      if (file.size > 200 * 1024 * 1024) return 'This file is too large.';
+
+      var ext = (file.name.split('.').pop() || '').toLowerCase();
+      var rawExts = ['cr2','cr3','nef','arw','dng','orf','rw2','raf','pef','srw','raw'];
+      if (rawExts.indexOf(ext) !== -1) return 'RAW files aren\u2019t supported. Convert to JPEG or PNG first.';
+      if (ext === 'svg' || file.type === 'image/svg+xml') return 'SVG isn\u2019t supported.';
+      if (format === 'tiff') return 'TIFF isn\u2019t supported. Try converting to JPEG or PNG.';
+      if (format === 'heic') return 'HEIC isn\u2019t supported yet. Convert to JPEG first.';
+      if (format === 'gif') return 'GIF isn\u2019t supported. Try JPEG, PNG, or WebP.';
+
+      var ok = ['jpeg', 'png', 'webp'];
+      if (format && ok.indexOf(format) === -1) return 'This file format isn\u2019t supported.';
+      if (!format && ['image/jpeg','image/png','image/webp'].indexOf(file.type) === -1)
+        return 'This file format isn\u2019t recognized.';
+
+      return null;
+    }
+
+    // ─── Image Processing ─────────────────────────
+
+    function loadImage(url) {
+      return new Promise(function (resolve, reject) {
+        var img = new Image();
+        img.onload = function () { resolve(img); };
+        img.onerror = function () { reject(new Error('This image couldn\u2019t be read.')); };
+        img.src = url;
+      });
+    }
+
+    function render(img, mime) {
+      return new Promise(function (resolve, reject) {
+        try {
+          var c = document.createElement('canvas');
+          c.width = img.naturalWidth;
+          c.height = img.naturalHeight;
+          var ctx = c.getContext('2d');
+          if (!ctx) { reject(new Error('Canvas isn\u2019t available in this browser.')); return; }
+          if (mime === 'image/jpeg') {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, c.width, c.height);
+          }
+          ctx.drawImage(img, 0, 0);
+          var quality = mime === 'image/png' ? undefined : 0.95;
+          c.toBlob(function (blob) {
+            c.width = 0;
+            c.height = 0;
+            if (!blob) { reject(new Error('Export failed. Try a smaller image.')); return; }
+            resolve(blob);
+          }, mime, quality);
+        } catch (e) {
+          reject(new Error('Something went wrong: ' + e.message));
+        }
+      });
+    }
+
+    async function processFile(file) {
+      var meta = await inspectFile(file);
+      var err = validate(file, meta.format);
+      if (err) throw new Error(err);
+
+      var mime = outputMime(file, meta.format);
+      var srcURL = URL.createObjectURL(file);
+      try {
+        var img = await loadImage(srcURL);
+        URL.revokeObjectURL(srcURL);
+        var blob = await render(img, mime);
+        return {
+          filename: cleanName(file.name),
+          blob: blob,
+          mime: mime,
+          originalSize: file.size,
+          cleanSize: blob.size,
+          metadata: meta
+        };
+      } catch (e) {
+        URL.revokeObjectURL(srcURL);
+        throw e;
+      }
+    }
+
+    // ─── Download ─────────────────────────────────
+
+    function triggerDownload(url, name) {
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // ─── UI States ────────────────────────────────
+
+    function showDropZone() {
+      revokeAll();
+      workspace.innerHTML =
+        '<div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Drop photos here or click to browse">' +
+          '<p class="drop-primary">Drop your photos</p>' +
+          '<p class="drop-secondary">or click to browse</p>' +
+          '<p class="drop-formats">JPEG \u00B7 PNG \u00B7 WebP</p>' +
+        '</div>';
+      bindDropZone();
+    }
+
+    function showProcessing(count) {
+      var text = count > 1
+        ? 'Removing metadata from ' + count + ' photos\u2026'
+        : 'Removing metadata\u2026';
+      workspace.innerHTML =
+        '<div class="processing">' +
+          '<p class="processing-text">' + text + '</p>' +
+        '</div>';
+    }
+
+    function showError(message) {
+      workspace.innerHTML =
+        '<div class="error-card">' +
+          '<p class="error-message">Couldn\u2019t process this file.</p>' +
+          '<p class="error-detail">' + esc(message) + '</p>' +
+          '<button class="btn-reset" id="btn-try-again">Try again</button>' +
+        '</div>';
+      document.getElementById('btn-try-again').addEventListener('click', showDropZone);
+    }
+
+    function showResults(results, errors) {
+      errors = errors || [];
+      var single = results.length === 1;
+      var heading = single ? 'Clean copy ready' : results.length + ' clean copies ready';
+
+      var html = '<div class="result">';
+      html += '<div class="result-heading">';
+      html += '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="' + (results.length > 0 ? '#00FF66' : '#FF5C5C') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      html += esc(heading);
+      html += '</div>';
+
+      for (var i = 0; i < results.length; i++) {
+        var r = results[i];
+        var url = storeURL(r.blob);
+        r._url = url;
+
+        var diff = r.originalSize - r.cleanSize;
+        var sizeStr = formatBytes(r.originalSize) + ' \u2192 ' + formatBytes(r.cleanSize);
+        if (diff > 0) sizeStr += ' (\u2212' + formatBytes(diff) + ')';
+
+        var metaStr;
+        if (r.metadata.hasMetadata) {
+          metaStr = '<span class="found">' + r.metadata.types.join(', ') + ' removed</span>';
+        } else {
+          metaStr = 'Re-encoded (no common metadata found)';
+        }
+
+        html += '<div class="result-file">';
+        html += '<div class="result-name">' + esc(r.filename) + '</div>';
+        html += '<div class="result-details">' + sizeStr + '</div>';
+        html += '<div class="result-meta">' + metaStr + '</div>';
+
+        if (!single) {
+          html += '<button class="result-file-download" data-idx="' + i + '" aria-label="Download ' + esc(r.filename) + '">';
+          html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+          html += 'Download';
+          html += '</button>';
+        }
+
+        html += '</div>';
+      }
+
+      if (errors.length > 0) {
+        html += '<div class="result-meta" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">';
+        html += errors.length + (errors.length === 1 ? ' file' : ' files') + ' skipped (unsupported format)';
+        html += '</div>';
+      }
+
+      html += '<div class="result-actions">';
+
+      var dlLabel = single ? 'Download' : 'Download all';
+      html += '<button class="btn-download" id="btn-download-main" aria-label="' + dlLabel + '">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+      html += dlLabel;
+      html += '</button>';
+
+      var resetLabel = single ? 'Choose another' : 'Choose more';
+      html += '<button class="btn-reset" id="btn-reset">' + resetLabel + '</button>';
+      html += '</div>';
+      html += '</div>';
+
+      workspace.innerHTML = html;
+
+      document.getElementById('btn-download-main').addEventListener('click', function () {
+        results.forEach(function (r, idx) {
+          setTimeout(function () { triggerDownload(r._url, r.filename); }, idx * 300);
+        });
+      });
+
+      document.getElementById('btn-reset').addEventListener('click', showDropZone);
+
+      var fileBtns = workspace.querySelectorAll('.result-file-download');
+      fileBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(this.getAttribute('data-idx'), 10);
+          triggerDownload(results[idx]._url, results[idx].filename);
+        });
+      });
+    }
+
+    // ─── File Handling ────────────────────────────
+
+    async function handleFiles(files) {
+      if (files.length === 0) return;
+
+      revokeAll();
+      showProcessing(files.length);
+
+      var startTime = performance.now();
+      var results = [];
+      var errors = [];
+
+      for (var i = 0; i < files.length; i++) {
+        try {
+          var result = await processFile(files[i]);
+          results.push(result);
+        } catch (e) {
+          errors.push({ name: files[i].name, message: e.message });
+        }
+      }
+
+      var elapsed = performance.now() - startTime;
+      var minDelay = 600;
+      if (elapsed < minDelay) await wait(minDelay - elapsed);
+
+      if (results.length === 0 && errors.length === 1) {
+        showError(errors[0].message);
+      } else if (results.length === 0 && errors.length > 1) {
+        showError('None of the files could be processed.');
+      } else {
+        showResults(results, errors);
+      }
+    }
+
+    // ─── Drop Zone Binding ────────────────────────
+
+    function bindDropZone() {
+      var zone = document.getElementById('drop-zone');
+      if (!zone) return;
+
+      zone.addEventListener('click', function () { fileInput.click(); });
+
+      zone.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      });
+
+      zone.addEventListener('dragenter', function (e) {
+        e.preventDefault();
+        zone.classList.add('over');
+      });
+
+      zone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        zone.classList.add('over');
+      });
+
+      zone.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        if (!e.relatedTarget || !zone.contains(e.relatedTarget)) zone.classList.remove('over');
+      });
+
+      zone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        zone.classList.remove('over');
+        if (e.dataTransfer.files.length > 0) handleFiles(Array.from(e.dataTransfer.files));
+      });
+    }
+
+    // ─── Global Events ────────────────────────────
+
+    fileInput.addEventListener('change', function (e) {
+      if (e.target.files.length > 0) {
+        handleFiles(Array.from(e.target.files));
+        e.target.value = '';
+      }
+    });
+
+    document.addEventListener('paste', function (e) {
+      var items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      var files = [];
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file') {
+          var f = items[i].getAsFile();
+          if (f) files.push(f);
+        }
+      }
+      if (files.length > 0) {
+        e.preventDefault();
+        handleFiles(files);
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    // ─── Init ─────────────────────────────────────
+
+    showDropZone();
+
+  })();
+  </script>
+</body>
+</html>
