@@ -1,0 +1,17 @@
+{
+  "name": "Metadata Remover – Free Online Photo EXIF & Privacy Cleaner",
+  "short_name": "MetaRemover",
+  "description": "Remove EXIF, GPS location, and hidden metadata from JPG, PNG, and WebP images. 100% private & client-side processing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

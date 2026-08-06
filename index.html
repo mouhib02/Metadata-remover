@@ -3,14 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Metadata Remover</title>
-  <meta name="description" content="Remove hidden metadata from your photos. Everything happens in your browser.">
+  <title>Metadata Remover – Free Online Photo EXIF &amp; Privacy Cleaner</title>
+  <meta name="description" content="Remove hidden EXIF metadata, GPS location, camera details, and personal info from your JPG, PNG, and WebP photos online. 100% private &amp; client-side processing in your browser.">
+  <meta name="keywords" content="metadata remover, remove exif data, photo privacy, clean metadata, strip exif, remove gps location from photo, image metadata cleaner online, free exif cleaner">
+  <meta name="author" content="Metadata Remover">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="https://metadataremover.site/">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#050505">
   <meta name="color-scheme" content="dark">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://metadataremover.site/">
+  <meta property="og:title" content="Metadata Remover – Free Online Photo EXIF &amp; Privacy Cleaner">
+  <meta property="og:description" content="Remove hidden EXIF metadata, GPS location, and camera details from photos online. 100% private, free, and processed directly in your browser.">
+  <meta property="og:image" content="https://metadataremover.site/og-image.png">
+  <meta property="og:site_name" content="Metadata Remover">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://metadataremover.site/">
+  <meta name="twitter:title" content="Metadata Remover – Free Online Photo EXIF &amp; Privacy Cleaner">
+  <meta name="twitter:description" content="Remove hidden EXIF metadata, GPS location, and camera details from photos online. 100% private, free, and processed directly in your browser.">
+  <meta name="twitter:image" content="https://metadataremover.site/og-image.png">
+
+  <!-- Structured Data: WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Metadata Remover",
+    "url": "https://metadataremover.site/",
+    "description": "Free online browser tool to strip EXIF, XMP, IPTC, and location metadata from JPEG, PNG, and WebP images instantly.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Client-side processing (100% private)",
+      "Supports JPEG, PNG, and WebP",
+      "Strips EXIF, XMP, IPTC, and ICC profiles",
+      "Batch processing multiple photos",
+      "Zero server uploads"
+    ]
+  }
+  </script>
+
+  <!-- Structured Data: FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is photo metadata (EXIF)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Metadata is hidden data stored inside digital photo files, including GPS coordinates, camera model, date/time, shutter speed, lens settings, and software details."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is it safe to use this tool for private photos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! All processing happens 100% locally in your browser using HTML5 Canvas re-encoding. Your images are never uploaded to any server."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which image formats are supported?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Metadata Remover supports JPEG (.jpg, .jpeg), PNG (.png), and WebP (.webp) image formats."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why should I remove EXIF data before sharing photos online?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Photos taken on smartphones and cameras often contain sensitive location tracking data (GPS coordinates) showing exact home or work locations. Removing metadata protects your personal privacy."
+        }
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {
       margin: 0;
@@ -65,9 +155,164 @@
 
     .app {
       width: 100%;
-      max-width: 480px;
+      max-width: 640px;
       margin: auto;
       padding: 48px 0;
+    }
+
+    /* ─── SEO Content & FAQ Accordion ─── */
+
+    .seo-container {
+      margin-top: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .seo-block {
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+    }
+
+    .seo-heading {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -0.2px;
+    }
+
+    .seo-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .seo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .seo-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 18px;
+      border-radius: 4px;
+    }
+
+    .seo-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seo-card-title svg {
+      color: var(--success);
+      flex-shrink: 0;
+    }
+
+    .seo-card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .steps-list {
+      list-style: none;
+      counter-reset: step-counter;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .steps-list li {
+      counter-increment: step-counter;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .steps-list li::before {
+      content: counter(step-counter);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--success);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 50%;
+    }
+
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .faq-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: border-color 150ms ease;
+    }
+
+    .faq-item[open] {
+      border-color: var(--border-hover);
+    }
+
+    .faq-summary {
+      padding: 14px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .faq-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-summary::after {
+      content: '+';
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--text-tertiary);
+      transition: transform 150ms ease;
+    }
+
+    .faq-item[open] .faq-summary::after {
+      content: '−';
+      color: var(--success);
+    }
+
+    .faq-answer {
+      padding: 0 16px 14px 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
 
     /* ─── Header ─── */
@@ -389,6 +634,101 @@
     </header>
 
     <main id="workspace" aria-label="Image processing area" aria-live="polite"></main>
+
+    <!-- SEO & Educational Content Sections for Google Indexing -->
+    <article class="seo-container">
+      
+      <!-- How it Works -->
+      <section class="seo-block">
+        <h2 class="seo-heading">How to Remove Metadata from Photos</h2>
+        <p class="seo-text">Remove EXIF data, GPS tags, and hidden camera properties from your images in three easy steps:</p>
+        <ol class="steps-list">
+          <li><span><strong>Select or Drop Images:</strong> Drag your JPEG, PNG, or WebP files directly into the box above or click browse.</span></li>
+          <li><span><strong>Automatic Local Cleaning:</strong> Your photos are instantly scrubbed in your browser using HTML5 Canvas re-encoding.</span></li>
+          <li><span><strong>Download Clean Copies:</strong> Save your privacy-cleansed photos without location data or EXIF headers.</span></li>
+        </ol>
+      </section>
+
+      <!-- Key Features -->
+      <section class="seo-block">
+        <h2 class="seo-heading">Why Use Metadata Remover?</h2>
+        <div class="seo-grid">
+          <div class="seo-card">
+            <div class="seo-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              100% Client-Side
+            </div>
+            <div class="seo-card-desc">Your photos never leave your device. All EXIF removal happens locally in Javascript.</div>
+          </div>
+          <div class="seo-card">
+            <div class="seo-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              GPS Location Stripper
+            </div>
+            <div class="seo-card-desc">Removes exact latitude, longitude, altitude, and geotags embedded by mobile devices and cameras.</div>
+          </div>
+          <div class="seo-card">
+            <div class="seo-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Multi-Format Support
+            </div>
+            <div class="seo-card-desc">Fully supports JPEG, PNG, and WebP formats with single file or batch processing capabilities.</div>
+          </div>
+          <div class="seo-card">
+            <div class="seo-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Zero Server Uploads
+            </div>
+            <div class="seo-card-desc">No network connection or account needed. Ultra-fast processing with zero bandwidth consumption.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Educational Guide: What is Photo EXIF Metadata? -->
+      <section class="seo-block">
+        <h2 class="seo-heading">What is Photo EXIF Metadata?</h2>
+        <p class="seo-text">
+          Exchangeable Image File Format (EXIF) is standard metadata embedded into photos by digital cameras, smartphones, and photo editing software. EXIF data often contains sensitive personal information, including:
+        </p>
+        <ul style="margin-top: 10px; margin-left: 20px; color: var(--text-secondary); font-size: 13px; line-height: 1.6;">
+          <li>Exact GPS coordinates (home address, workplace, vacation spots)</li>
+          <li>Date, precise time, and timezone when the image was taken</li>
+          <li>Camera model, serial number, smartphone device ID, and OS version</li>
+          <li>Camera settings: focal length, ISO, aperture, shutter speed, and flash parameters</li>
+          <li>Software signature tags (Adobe Photoshop, Lightroom, Canvas)</li>
+        </ul>
+        <p class="seo-text" style="margin-top: 10px;">
+          Stripping EXIF data before uploading photos to social networks, blogs, forums, or online marketplaces guarantees your location privacy and safeguards personal identity.
+        </p>
+      </section>
+
+      <!-- Frequently Asked Questions (FAQ) -->
+      <section class="seo-block">
+        <h2 class="seo-heading">Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary class="faq-summary">What is photo metadata (EXIF)?</summary>
+            <div class="faq-answer">Metadata is hidden information embedded inside image files. It includes GPS location coordinates, camera brand/model, timestamps, lens settings, and editing software details.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-summary">Is this metadata remover tool free and private?</summary>
+            <div class="faq-answer">Yes, 100% free and completely private. All image processing takes place directly in your web browser using HTML5 Canvas re-encoding. No images are ever uploaded to any external server.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-summary">Which image formats can I scrub metadata from?</summary>
+            <div class="faq-answer">You can clean metadata from JPG / JPEG, PNG, and WebP images. Batch processing multiple photos at once is supported.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-summary">Does removing EXIF metadata reduce photo quality?</summary>
+            <div class="faq-answer">No noticeable quality loss occurs. Images are re-encoded at maximum visual quality (95% quality rating for JPEGs and lossless rendering for PNGs) while stripping all metadata headers.</div>
+          </details>
+        </div>
+      </section>
+
+    </article>
 
     <noscript>
       <p style="text-align:center;color:#8A8A8A;margin-top:48px;">JavaScript is required to use this tool.</p>

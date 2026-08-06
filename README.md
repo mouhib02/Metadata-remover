@@ -1,3 +1,4 @@
+# Metadata Remover
 
 Your photos carry hidden details. When you take a picture, your phone or camera automatically embeds extra information inside the file: your GPS location, the exact time, your device model, and the editing software you used. Most people share these files online without realizing this data is attached.
 
@@ -12,7 +13,7 @@ This tool strips that hidden data away. Open the page, select a photo, and get a
 You can run this on any computer, tablet, or phone (Windows, macOS, Linux, iOS, Android).
 
 1. **Open the tool**: 
-   * You can open the `index.html` file directly in any browser (like Safari, Chrome, Edge, or Firefox) without installing anything.
+   * You can open `index.html` directly in any browser or host it via web server/GitHub Pages.
 2. **Add your photos**:
    * **Drag and drop** files directly into the dashed box.
    * **Click or tap** inside the box to open your device's file selector.
@@ -21,6 +22,34 @@ You can run this on any computer, tablet, or phone (Windows, macOS, Linux, iOS, 
 3. **Download the clean copies**:
    * The tool will analyze the image, show you what metadata was found (like location or camera info), and generate a new, clean version.
    * Click **Download** (or **Download all** for multiple photos) to save the clean copies.
+
+---
+
+## Google Search Engine Optimization (SEO) & Webmaster Setup
+
+This project is fully optimized for **Google Search Engine** indexing, high ranking, and rich search results.
+
+### SEO Features Included
+- **Canonical URLs & Meta Tags**: Pre-configured canonical URL (`https://metadataremover.site/`), search-optimized titles, and intent-focused meta descriptions.
+- **Structured Data (JSON-LD Schemas)**:
+  - `WebApplication` schema for software application indexing.
+  - `FAQPage` schema to enable Google **People Also Ask (PAA)** rich snippets.
+  - `BreadcrumbList` schema.
+- **Sitemap & Robots Configuration**:
+  - `sitemap.xml` for indexer discovery.
+  - `robots.txt` referencing `https://metadataremover.site/sitemap.xml`.
+- **Social Sharing & Search Cards**: `og-image.png` Open Graph and Twitter Card thumbnails.
+- **Web App Manifest**: `manifest.json` for PWA compliance and mobile Google indexing.
+
+### How to Submit to Google Search Console
+
+1. **Add Property**: Go to [Google Search Console](https://search.google.com/search-console) and add `https://metadataremover.site`.
+2. **Verify Ownership**: Verify via HTML meta tag (add `<meta name="google-site-verification" content="..." />` to `<head>`) or DNS TXT record.
+3. **Submit Sitemap**: In Search Console, navigate to **Sitemaps** and submit:
+   ```
+   https://metadataremover.site/sitemap.xml
+   ```
+4. **Validate Structured Data**: Test your live site using the official [Google Rich Results Test](https://search.google.com/test/rich-results) tool to confirm schema validation.
 
 ---
 
@@ -61,6 +90,7 @@ When you load an image file, the browser decodes the raw pixels. This applicatio
 When we ask the canvas to export the drawing using the browser's standard `canvas.toBlob()` method, it builds a brand new image file using only those raw pixels. Because the file is written completely from scratch by the browser's graphics engine, the original metadata container headers (like EXIF, XMP, and IPTC) are never copied over.
 
 ---
+
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
